@@ -1,0 +1,13 @@
+{
+  "name": "@studentlife/shared",
+  "version": "1.0.0",
+  "description": "Shared types and schemas for StudentLife AI",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
