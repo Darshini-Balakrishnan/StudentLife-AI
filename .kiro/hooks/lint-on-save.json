@@ -1,0 +1,13 @@
+{
+  "name": "Lint on Save",
+  "version": "1.0.0",
+  "description": "Run TypeScript compiler check on backend files whenever a .ts file is saved, catching type errors before runtime",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/src/**/*.ts"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd backend && npx tsc --noEmit 2>&1 | head -30"
+  }
+}

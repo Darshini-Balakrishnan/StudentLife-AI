@@ -1,0 +1,13 @@
+{
+  "name": "Route Convention Check",
+  "version": "1.0.0",
+  "description": "When a new backend route file is created, remind the agent to verify it follows project conventions: authenticate middleware, AuthRequest type, error shape, and registration in index.ts",
+  "when": {
+    "type": "fileCreated",
+    "patterns": ["backend/src/routes/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A new backend route file was just created. Before continuing, verify it follows the project conventions from the steering doc:\n1. Every protected route uses the `authenticate` middleware from `../middleware/auth`\n2. Uses `AuthRequest` (not `Request`) for typed `req.userId`\n3. Returns `{ error: string }` on all failure paths — no raw throws\n4. The new route is registered in `backend/src/routes/index.ts`\n\nIf any of these are missing, fix them now."
+  }
+}

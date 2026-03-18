@@ -1,0 +1,12 @@
+{
+  "name": "Backend Health Check",
+  "version": "1.0.0",
+  "description": "After each spec task completes, hit the backend health endpoint to confirm the server is still running and responding",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "curl -s http://localhost:3001/api/health | node -e \"const d=require('fs').readFileSync('/dev/stdin','utf8'); const j=JSON.parse(d); console.log(j.status === 'ok' ? '✅ Backend healthy: ' + j.timestamp : '❌ Backend unhealthy: ' + d)\""
+  }
+}

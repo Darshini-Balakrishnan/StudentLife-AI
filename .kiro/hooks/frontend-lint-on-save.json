@@ -1,0 +1,13 @@
+{
+  "name": "Frontend Lint on Save",
+  "version": "1.0.0",
+  "description": "Run Next.js ESLint on frontend files whenever a .tsx or .ts file is saved",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["frontend/src/**/*.tsx", "frontend/src/**/*.ts"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd frontend && npx next lint --file src 2>&1 | head -20"
+  }
+}

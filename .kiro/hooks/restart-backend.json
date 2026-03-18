@@ -1,0 +1,12 @@
+{
+  "name": "Restart Backend Dev Server",
+  "version": "1.0.0",
+  "description": "Manually triggered hook to kill any process on port 3001 and remind the user to restart the backend dev server",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo '--- Checking port 3001 ---' && netstat -ano | findstr :3001 || echo 'Port 3001 is free' && echo '' && echo 'Run this to start the backend:' && echo '  cd backend && npm run dev'"
+  }
+}

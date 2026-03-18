@@ -1,0 +1,13 @@
+{
+  "name": "DB Migration Reminder",
+  "version": "1.0.0",
+  "description": "When init.ts is edited, remind the agent that all table changes must be backward-compatible since init.ts uses CREATE TABLE IF NOT EXISTS — existing columns are never dropped automatically",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["backend/src/db/init.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "backend/src/db/init.ts was just edited. Remember: all CREATE TABLE statements use IF NOT EXISTS, so new columns added to existing tables will NOT be applied to an already-initialized database. If you added a new column to an existing table, also add an ALTER TABLE ... ADD COLUMN IF NOT EXISTS statement after the CREATE TABLE block so existing databases get the column too."
+  }
+}

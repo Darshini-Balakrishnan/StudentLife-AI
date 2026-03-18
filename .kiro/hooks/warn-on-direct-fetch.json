@@ -1,0 +1,13 @@
+{
+  "name": "Warn on Direct Fetch Usage",
+  "version": "1.0.0",
+  "description": "When a frontend file is saved, check if it uses fetch() directly instead of the api axios instance and remind the agent to fix it",
+  "when": {
+    "type": "fileEdited",
+    "patterns": ["frontend/src/**/*.tsx", "frontend/src/**/*.ts"]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A frontend file was just saved. Quickly scan it for any direct use of `fetch(` — if found, replace it with the `api` axios instance from `@/lib/api`. The api instance automatically attaches the JWT Authorization header. Direct fetch() calls will fail on authenticated endpoints."
+  }
+}
