@@ -27,50 +27,63 @@ export async function getWeather(city = 'Fairfax,VA,US'): Promise<WeatherData> {
   const apiKey = process.env.OPENWEATHER_API_KEY;
 
   if (!apiKey) {
-    // Try wttr.in as a free no-key fallback
-    try {
-      const res = await axios.get('https://wttr.in/Fairfax,VA?format=j1', { timeout: 5000 });
-      const d = res.data;
-      const current = d.current_condition?.[0];
-      if (current) {
-        const tempF = parseInt(current.temp_F);
-        const desc = current.weatherDesc?.[0]?.value || 'Unknown';
-        const humidity = parseInt(current.humidity);
-        const windMph = parseInt(current.windspeedMiles);
-        const weatherCode = parseInt(current.weatherCode);
-        // wttr.in weather codes: 200-299 thunder, 300-399 drizzle, 500-599 rain, 600-699 snow, 800 clear, 801-804 cloudy
-        const condition: WeatherData['condition'] =
-          weatherCode >= 200 && weatherCode < 300 ? 'storm' :
-          weatherCode >= 300 && weatherCode < 600 ? 'rain' :
-          weatherCode >= 600 && weatherCode < 700 ? 'snow' :
-          weatherCode === 113 ? 'clear' :
-          weatherCode <= 119 ? 'cloudy' : 'other';
-        const isOutdoorFriendly = !['rain', 'snow', 'storm'].includes(condition);
-        return {
-          city: 'Fairfax, VA',
-          temp: tempF,
-          feels_like: parseInt(current.FeelsLikeF || current.temp_F),
-          description: desc.toLowerCase(),
-          icon: isOutdoorFriendly ? '01d' : condition === 'rain' ? '10d' : condition === 'snow' ? '13d' : '11d',
-          humidity,
-          wind_speed: windMph,
-          is_outdoor_friendly: isOutdoorFriendly,
-          condition,
-        };
-      }
-    } catch {
-      // wttr.in also failed — return static default
-    }
+    // Use wttr.in as a free no-key fallback
+    const res = await axios.get('https://wttr.in/Fairfax,VA?format=j1', { timeout: 8000 });
+    // wttr.in wraps the payload in a top-level "data" key
+    const d = res.data?.data ?? res.data;
+    const current = d.current_condition?.[0];
+    if (!current) throw new Error('wttr.in returned no current_condition');
+
+    const tempF = parseInt(current.temp_F);
+    const feelsLikeF = parseInt(current.FeelsLikeF ?? current.temp_F);
+    const humidity = parseInt(current.humidity);
+    const windMph = parseInt(current.windspeedMiles);
+    const weatherCode = parseInt(current.weatherCode);
+
+    // wttr.in codes: 113=sunny, 116=partly cloudy, 119/122=cloudy,
+    // 176-282=rain/drizzle, 293-377=rain/sleet, 386-395=thunder/snow
+    const condition: WeatherData['condition'] =
+      weatherCode === 113 || weatherCode === 116 ? 'clear' :
+      weatherCode <= 122 ? 'cloudy' :
+      weatherCode >= 386 ? 'storm' :
+      weatherCode >= 320 && weatherCode < 386 ? 'snow' :
+      weatherCode >= 176 ? 'rain' : 'other';
+
+    // Map wttr.in code to a description string
+    const descMap: Record<number, string> = {
+      113: 'sunny', 116: 'partly cloudy', 119: 'cloudy', 122: 'overcast',
+      176: 'patchy rain', 200: 'thundery outbreaks', 227: 'blowing snow',
+      230: 'blizzard', 248: 'fog', 260: 'freezing fog',
+      263: 'light drizzle', 266: 'light drizzle', 281: 'freezing drizzle',
+      284: 'heavy freezing drizzle', 293: 'light rain', 296: 'light rain',
+      299: 'moderate rain', 302: 'moderate rain', 305: 'heavy rain',
+      308: 'heavy rain', 311: 'light freezing rain', 314: 'moderate freezing rain',
+      317: 'light sleet', 320: 'moderate sleet', 323: 'light snow',
+      326: 'light snow', 329: 'moderate snow', 332: 'moderate snow',
+      335: 'heavy snow', 338: 'heavy snow', 350: 'ice pellets',
+      353: 'light rain shower', 356: 'moderate rain shower', 359: 'torrential rain',
+      362: 'light sleet shower', 365: 'moderate sleet shower', 368: 'light snow shower',
+      371: 'moderate snow shower', 374: 'light ice pellet shower',
+      377: 'moderate ice pellet shower', 386: 'thundery rain', 389: 'heavy thundery rain',
+      392: 'thundery snow', 395: 'heavy thundery snow',
+    };
+    const desc = descMap[weatherCode] ?? 'partly cloudy';
+
+    const isOutdoorFriendly = !['rain', 'snow', 'storm'].includes(condition);
+    const iconMap: Record<WeatherData['condition'], string> = {
+      clear: '01d', cloudy: '03d', rain: '10d', snow: '13d', storm: '11d', other: '02d',
+    };
+
     return {
       city: 'Fairfax, VA',
-      temp: 72,
-      feels_like: 70,
-      description: 'Add OPENWEATHER_API_KEY to .env for live weather',
-      icon: '01d',
-      humidity: 50,
-      wind_speed: 5,
-      is_outdoor_friendly: true,
-      condition: 'clear',
+      temp: tempF,
+      feels_like: feelsLikeF,
+      description: desc,
+      icon: iconMap[condition],
+      humidity,
+      wind_speed: windMph,
+      is_outdoor_friendly: isOutdoorFriendly,
+      condition,
     };
   }
 

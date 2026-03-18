@@ -9,7 +9,7 @@ const router = Router();
 // GET /api/mcp/weather — current weather for GMU Fairfax campus
 router.get('/weather', async (_req, res) => {
   try {
-    const cacheKey = 'mcp:weather';
+    const cacheKey = 'mcp:weather:v2';
     const cached = await cacheGet(cacheKey);
     if (cached) {
       try { return res.json(JSON.parse(cached)); } catch { /* bad cache, refetch */ }

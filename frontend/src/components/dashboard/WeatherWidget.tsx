@@ -44,26 +44,7 @@ export default function WeatherWidget({ onWeatherLoad }: { onWeatherLoad?: (w: W
 
   if (!weather) return null;
 
-  const noKey = weather.description.includes('OPENWEATHER_API_KEY');
   const bg = CONDITION_BG[weather.condition] || CONDITION_BG.other;
-
-  if (noKey) {
-    return (
-      <div className="rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 p-4 text-white shadow-sm">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">🌤️</span>
-          <div>
-            <div className="font-semibold text-sm">Live weather unavailable</div>
-            <div className="text-xs opacity-80">
-              Add <code className="bg-white/20 px-1 rounded">OPENWEATHER_API_KEY</code> to backend{' '}
-              <code className="bg-white/20 px-1 rounded">.env</code> — free at{' '}
-              <a href="https://openweathermap.org/api" target="_blank" rel="noopener noreferrer" className="underline">openweathermap.org</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={`rounded-xl bg-gradient-to-r ${bg} p-4 text-white shadow-sm`}>
