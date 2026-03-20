@@ -218,3 +218,5 @@ studentlife-ai/
 │   └── store/           # Zustand auth store
 └── shared/              # TypeScript types shared across packages
 ```
+Demo:
+https://youtu.be/cl7Fs-LoGSw
