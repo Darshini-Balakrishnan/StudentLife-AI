@@ -1,4 +1,4 @@
-# StudentLife AI — Kiro Hackathon Project
+# StudentLife AI — Kiro
 
 > An AI-powered student companion for George Mason University students, built entirely with Kiro.
 
